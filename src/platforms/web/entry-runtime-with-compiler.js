@@ -15,6 +15,7 @@ const idToTemplate = cached(id => {
 })
 
 const mount = Vue.prototype.$mount
+// hydrating参数和服务端渲染相关，浏览器下不需要传
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
@@ -28,9 +29,10 @@ Vue.prototype.$mount = function (
     )
     return this
   }
-
+  // $options: {el, data, methods, watch...}
   const options = this.$options
   // resolve template/el and convert to render function
+  // options中不存在render函数时，将template的dom转化为render函数
   if (!options.render) {
     let template = options.template
     if (template) {
@@ -61,7 +63,7 @@ Vue.prototype.$mount = function (
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile')
       }
-
+      // 重点：将template转化render函数，所有的Vue组件的渲染最终都需要render方法
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
         shouldDecodeNewlines,
@@ -79,6 +81,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
+  // 原先原型上的$mount方法，其内部调用了mountComponent方法 该方法在/src/platform/web/runtime/index.js
   return mount.call(this, el, hydrating)
 }
 
