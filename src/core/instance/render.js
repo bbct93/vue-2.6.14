@@ -28,9 +28,11 @@ export function initRender (vm: Component) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
+  // _c是针对用户使用template编写组件的方法
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
+  // 针对用户使用render函数编写组件的方法
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
   // $attrs & $listeners are exposed for easier HOC creation.
@@ -65,9 +67,10 @@ export function renderMixin (Vue: Class<Component>) {
   Vue.prototype.$nextTick = function (fn: Function) {
     return nextTick(fn, this)
   }
-
+  // 此处定义_render方法，返回Vode虚拟dom,虚拟dom的生成依赖crateElement，他定义在src/core/vdom/create-element.js
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
+    // 调用的render是在$mount阶段将template转为render的方法，入参是vm.$createElement
     const { render, _parentVnode } = vm.$options
 
     if (_parentVnode) {
@@ -80,6 +83,7 @@ export function renderMixin (Vue: Class<Component>) {
 
     // set parent vnode. this allows render functions to have access
     // to the data on the placeholder node.
+    // vm.$vnode指向父节点
     vm.$vnode = _parentVnode
     // render self
     let vnode

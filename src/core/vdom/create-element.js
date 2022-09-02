@@ -25,15 +25,26 @@ const ALWAYS_NORMALIZE = 2
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
+// 是对 _createElement的一层封装，可以更加灵活的传入参数
+// 正常传参（有data参数）
+// render(createElement) {
+//   return createElement('h1', { class: 'title'}, ['内容1', '内容2'])
+// }
 export function createElement (
-  context: Component,
-  tag: any,
+  context: Component, // VNode的上下文环境
+  tag: any,  // 标签tag 如h1 div span等tag
   data: any,
-  children: any,
+  children: any, // 子节点
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
+  // 对传参进行处理，如果data不是对象，那么把参数后移一位
   if (Array.isArray(data) || isPrimitive(data)) {
+    // data参数不传
+    // render(createElement) {
+    //   return createElement('h1', ['内容1', '内容2'])
+    // }
+    // 下面这块代码就是对传参不同做降级处理(如果第二个参数 data 不是对象的话，参数整体后移，data 设置为 undefined)
     normalizationType = children
     children = data
     data = undefined
@@ -51,6 +62,7 @@ export function _createElement (
   children?: any,
   normalizationType?: number
 ): VNode | Array<VNode> {
+  // 不能传入响应式对象
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
       `Avoid using observed data object as vnode data: ${JSON.stringify(data)}\n` +
@@ -60,6 +72,7 @@ export function _createElement (
     return createEmptyVNode()
   }
   // object syntax in v-bind
+  // <component :is="name"></component> 组件会含有 .is
   if (isDef(data) && isDef(data.is)) {
     tag = data.is
   }
@@ -68,6 +81,7 @@ export function _createElement (
     return createEmptyVNode()
   }
   // warn against non-primitive key
+  // 不能传入非基础数据类型的key，基础数据类型：number，string。。。
   if (process.env.NODE_ENV !== 'production' &&
     isDef(data) && isDef(data.key) && !isPrimitive(data.key)
   ) {
@@ -80,6 +94,7 @@ export function _createElement (
     }
   }
   // support single function children as default scoped slot
+  // 对插槽的处理
   if (Array.isArray(children) &&
     typeof children[0] === 'function'
   ) {
@@ -87,15 +102,32 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
+  // 对children的处理，每一个VNode会包含若干子节点，这些子节点也应该是VNode类型
+  // 用户手写render会走进normalizeChildren
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
+  /*
+    simpleNormalizeChildren 方法调用场景是 render 函数是编译生成的，
+    即用户手写template在$mount阶段编译转化为render。
+    理论上编译生成的 children 都已经是 VNode 类型的
+    */
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
+  /*
+    这里先对 tag 做判断，如果是 string 类型，则再判断如果是为 HTML 内置标签类型，就直接创建一个普通 VNode 节点，
+    如果是已注册的组件名，则通过 createComponent 创建一个组件 VNode，
+    否则创建一个未知标签的VNode。createComponent 方法本质是返回一个 VNode
+  */
+  /*
+    isReservedTag = function (tag) {
+      return isHTMLTag(tag) || isSVG(tag)
+    };
+    */
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.nativeOn) && data.tag !== 'component') {

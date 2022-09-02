@@ -1,5 +1,5 @@
 /* @flow */
-
+// Vue中的virtual dom借鉴了开源库snabbdom[https://github.com/snabbdom/snabbdom],然后加入了一些 Vue.js 特色的东西
 export default class VNode {
   tag: string | void;
   data: VNodeData | void;

@@ -176,13 +176,13 @@ export function mountComponent(
       const endTag = `vue-perf-end:${id}`
 
       mark(startTag)
-      // _render定义在src/core/instance/render.js
+      // 重点： _render定义在src/core/instance/render.js，返回VNode(虚拟dom)
       const vnode = vm._render()
       mark(endTag)
       measure(`vue ${name} render`, startTag, endTag)
 
       mark(startTag)
-      // 调用vm实例上的_update方法
+      // 调用vm实例上的_update方法,入参是_render()返回的虚拟dom和是否服务端渲染
       vm._update(vnode, hydrating)
       mark(endTag)
       measure(`vue ${name} patch`, startTag, endTag)
@@ -197,8 +197,9 @@ export function mountComponent(
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
   /*重点：
-  实例化一个watcher，在它的回调函数中会调用这个updateComponent方法，这个方法中会调用vm._render生成虚拟Node，
-  最终会调用vm._update方法更新dom
+  实例化一个watcher，在它的回调函数中会调用这个updateComponent方法，这个方法做两件事情
+  1、这个方法中会调用vm._render生成虚拟Node，
+  2、最终会调用vm._update方法更新dom
   Watcher在这里起到两个作用：
   1、初始化执行回调函数
   2、当vm实例中检测的数据发生改变时执行回调，重新渲染组件
