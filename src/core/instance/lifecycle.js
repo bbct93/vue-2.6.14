@@ -56,6 +56,7 @@ export function initLifecycle(vm: Component) {
 }
 
 export function lifecycleMixin(Vue: Class<Component>) {
+  // _update核心是调用__patch__函数 它的定义在 src/platforms/web/runtime/patch.js中
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
@@ -140,9 +141,10 @@ export function lifecycleMixin(Vue: Class<Component>) {
 
 export function mountComponent(
   vm: Component,
-  el: ?Element,
+  el: ?Element,  // 传入的el是经过query(el)返回的dom
   hydrating?: boolean
 ): Component {
+  // vm上定义$el
   vm.$el = el
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode
