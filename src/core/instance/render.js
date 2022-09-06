@@ -68,6 +68,11 @@ export function renderMixin (Vue: Class<Component>) {
     return nextTick(fn, this)
   }
   // 此处定义_render方法，返回Vode虚拟dom,虚拟dom的生成依赖crateElement，他定义在src/core/vdom/create-element.js
+  /*
+  这段代码是通过 render 函数去渲染的，
+  render 函数调用 createElement，
+  createElement 根据 tag 的不同调用不同的方法生成 VNode
+*/
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
     // 调用的render是在$mount阶段将template转为render的方法，入参是vm.$createElement

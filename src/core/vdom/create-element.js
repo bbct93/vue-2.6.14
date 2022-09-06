@@ -55,6 +55,7 @@ export function createElement (
   return _createElement(context, tag, data, children, normalizationType)
 }
 
+
 export function _createElement (
   context: Component,
   tag?: string | Class<Component> | Function | Object,
@@ -62,6 +63,7 @@ export function _createElement (
   children?: any,
   normalizationType?: number
 ): VNode | Array<VNode> {
+  console.log('elementParams--->', context, tag, data, children)
   // 不能传入响应式对象
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -115,6 +117,7 @@ export function _createElement (
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns
+  // 不是string类型走createComponent逻辑
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
@@ -154,6 +157,7 @@ export function _createElement (
     }
   } else {
     // direct component options / constructor
+    console.log('tag from createElement', tag)
     vnode = createComponent(tag, data, context, children)
   }
   if (Array.isArray(vnode)) {

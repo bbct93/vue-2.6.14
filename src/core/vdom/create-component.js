@@ -105,14 +105,33 @@ export function createComponent (
   children: ?Array<VNode>,
   tag?: string
 ): VNode | Array<VNode> | void {
+  /*
+    组件渲染的主要逻辑有三个：
+      1、构造子类构造函数
+      2、安装组件钩子函数
+      3、实例化VNode
+  */
   if (isUndef(Ctor)) {
     return
   }
-
+  // 获得基础组件构造函数，在这里 baseCtor 实际上就是 Vue 的构造函数
+  /*
+    这个的定义是在最开始初始化 Vue 的阶段，
+    在 src/core/global-api/index.js 中的 initGlobalAPI：Vue.options._base = Vue
+    在src/core/instance/init.js 里 Vue 原型上的 _init 函数中有这么一段逻辑：
+    vm.$options = mergeOptions(
+      resolveConstructorOptions(vm.constructor),
+      options || {},
+      vm
+    )
+    这样就把 Vue 上的一些 option 扩展到了 vm.$options 上，
+    所以我们也就能通过 vm.$options._base 拿到 Vue 这个构造函数
+  */
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
+    // Vue.extend 函数的定义，在 src/core/global-api/extend.js 中
     Ctor = baseCtor.extend(Ctor)
   }
 
