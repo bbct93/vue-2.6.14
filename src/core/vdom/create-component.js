@@ -44,6 +44,7 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
+      // 创建Vue实例，给vnode赋值，然后调用$mount方法挂载子组件
       const child = vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance
@@ -114,6 +115,9 @@ export function createComponent (
   if (isUndef(Ctor)) {
     return
   }
+
+
+
   // 获得基础组件构造函数，在这里 baseCtor 实际上就是 Vue 的构造函数
   /*
     这个的定义是在最开始初始化 Vue 的阶段，
@@ -202,13 +206,19 @@ export function createComponent (
   }
 
   // install component management hooks onto the placeholder node
+  // 安装组件的钩子函数
+  // before data: {on: undefined}
   installComponentHooks(data)
+  // after data: {on: undefined, hook: {...}}
 
   // return a placeholder vnode
+  // 通过 new VNode 实例化一个 vnode 并返回。
+  // 需要注意的是和普通元素节点的 vnode 不同，组件的 vnode 是没有 children 的，这点很关键
   const name = Ctor.options.name || tag
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
     data, undefined, undefined, undefined, context,
+    // vnode实例上就会有componentOptions对象
     { Ctor, propsData, listeners, tag, children },
     asyncFactory
   )
@@ -233,6 +243,7 @@ export function createComponentInstanceForVnode (
   const options: InternalComponentOptions = {
     _isComponent: true,
     _parentVnode: vnode,
+    // parent 表示当前激活的组件实例
     parent
   }
   // check inline-template render functions
@@ -241,11 +252,15 @@ export function createComponentInstanceForVnode (
     options.render = inlineTemplate.render
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
+  // 这里返回的就是VueComponent，所有的new Ctor返回的都是VueComponent
+  // 所以子组件的实例化实际上就是在这个时机执行的，并且它会执行实例的 _init 方法，
+  // 这个过程有一些和之前不同的地方需要挑出来说，代码在 src/core/instance/init.js
   return new vnode.componentOptions.Ctor(options)
 }
 
 function installComponentHooks (data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
+  // hooksToMerge = Object.keys(componentVNodeHooks)
   for (let i = 0; i < hooksToMerge.length; i++) {
     const key = hooksToMerge[i]
     const existing = hooks[key]
