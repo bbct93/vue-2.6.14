@@ -1,5 +1,5 @@
 /* @flow */
-
+// test
 import { escape } from 'web/server/util'
 import { SSR_ATTR } from 'shared/constants'
 import { RenderContext } from './render-context'
