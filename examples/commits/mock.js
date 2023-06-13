@@ -1,12 +1,12 @@
 window.MOCKS = {
   master: [
     {
-      sha: "0948d999f2fddf9f90991956493f976273c5da1f",
+      sha: "0948d999f2fddf9f90991956493f976273c5da1f111",
       node_id:
         "MDY6Q29tbWl0MTE3MzAzNDI6MDk0OGQ5OTlmMmZkZGY5ZjkwOTkxOTU2NDkzZjk3NjI3M2M1ZGExZg==",
       commit: {
         author: {
-          name: "Evan You",
+          name: "Evan You2",
           email: "yyx990803@gmail.com",
           date: "2017-10-13T03:07:14Z"
         },
