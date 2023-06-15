@@ -13,16 +13,17 @@ const idToTemplate = cached(id => {
   const el = query(id)
   return el && el.innerHTML
 })
-
+// 先将mount方法缓存起来，最先定义的方法在runtime/index下
 const mount = Vue.prototype.$mount
-// hydrating参数和服务端渲染相关，浏览器下不需要传
+// hydrating参数和服务端渲染相关，浏览器下不需要传，重新定义mount
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  // query返回真实dom, 如果el为空，返回一个空的div
   el = el && query(el)
-
   /* istanbul ignore if */
+  // vue不能直接替换body或者HTML节点，所以会报警告，这也是为什么会挂在在一个id为app的div上而不是在body上，这里是替换哦
   if (el === document.body || el === document.documentElement) {
     process.env.NODE_ENV !== 'production' && warn(
       `Do not mount Vue to <html> or <body> - mount to normal elements instead.`
@@ -56,6 +57,7 @@ Vue.prototype.$mount = function (
         return this
       }
     } else if (el) {
+      // 返回的一个el外层的dom字符串，template最终是一个字符串
       template = getOuterHTML(el)
     }
     if (template) {
@@ -63,7 +65,7 @@ Vue.prototype.$mount = function (
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile')
       }
-      // 重点：将template转化render函数，所有的Vue组件的渲染最终都需要render方法
+      // 重点：将template转化render函数，所有的Vue组件的渲染最终都需要转化为render方法
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
         shouldDecodeNewlines,
@@ -81,7 +83,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
-  // 原先原型上的$mount方法，其内部调用了mountComponent方法 该方法在/src/platform/web/runtime/index.js
+  // 原先原型上的$mount方法，(之前缓存的)其内部调用了mountComponent方法 该方法在/src/platform/web/runtime/index.js
   return mount.call(this, el, hydrating)
 }
 

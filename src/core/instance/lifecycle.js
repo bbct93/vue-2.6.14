@@ -146,6 +146,7 @@ export function mountComponent(
 ): Component {
   // vm上定义$el
   vm.$el = el
+  // 判断是否存在转化的render函数，在前面的$mount时将template转化为render函数并挂在在vm.$options上
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {

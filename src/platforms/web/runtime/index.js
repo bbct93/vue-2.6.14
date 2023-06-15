@@ -38,7 +38,9 @@ Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  // query返回真实dom, 即为<div id="app"></div>
   el = el && inBrowser ? query(el) : undefined
+  /* mountComponent方法在init的时候在initLiftCycle里定义的 */
   return mountComponent(this, el, hydrating)
 }
 
