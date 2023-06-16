@@ -34,11 +34,12 @@ export function createElement (
   context: Component, // VNode的上下文环境
   tag: any,  // 标签tag 如h1 div span等tag
   data: any,
-  children: any, // 子节点
+  children: any, // 子节点,可以构建出vnode-tree
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
-  // 对传参进行处理，如果data不是对象，那么把参数后移一位
+  debugger
+  // 对传参不一致进行处理，如果data不是对象，那么把参数后移一位
   if (Array.isArray(data) || isPrimitive(data)) {
     // data参数不传
     // render(createElement) {
@@ -64,7 +65,7 @@ export function _createElement (
   normalizationType?: number
 ): VNode | Array<VNode> {
   console.log('elementParams--->', context, tag, data, children)
-  // 不能传入响应式对象
+  // vnodeData不能传入响应式对象
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
       `Avoid using observed data object as vnode data: ${JSON.stringify(data)}\n` +

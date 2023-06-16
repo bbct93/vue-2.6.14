@@ -144,7 +144,12 @@ export function mountComponent(
   el: ?Element,  // 传入的el是经过query(el)返回的dom
   hydrating?: boolean
 ): Component {
-  // vm上定义$el
+  /***
+   * vm代表的是Vue实例，它是通过构造函数Vue创建的一个对象。vm是view-model简写，表示视图模型
+   * 组件实例被称为"vm"，是因为它们在框架内部充当了视图和模型之间的桥梁。
+   * 在mountComponent方法中，vm是当前组件实例，它是通过new Vue(options)创建的。
+   */
+  // vm上定义$el，即将el挂载到vm.$el上
   vm.$el = el
   // 判断是否存在转化的render函数，在前面的$mount时将template转化为render函数并挂在在vm.$options上
   if (!vm.$options.render) {
@@ -199,21 +204,21 @@ export function mountComponent(
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
-  /*重点：
-  实例化一个watcher，在它的回调函数中会调用这个updateComponent方法，这个方法做两件事情
-  1、这个方法中会调用vm._render生成虚拟Node，
-  2、最终会调用vm._update方法更新dom
-  Watcher在这里起到两个作用：
-  1、初始化执行回调函数
-  2、当vm实例中检测的数据发生改变时执行回调，重新渲染组件
-  */
+  /**
+   * 实例化一个watcher，在它的构造函数中会调用这个updateComponent方法，这个方法做两件事情
+   *   1、这个方法中会调用vm._render生成虚拟Node，
+   *   2、最终会调用vm._update方法更新dom
+   *   Watcher在这里起到两个作用：
+   *   1、初始化执行回调函数
+   *   2、当vm实例中检测的数据发生改变时执行回调，重新渲染组件
+   */
   new Watcher(vm, updateComponent, noop, {
     before() {
       if (vm._isMounted && !vm._isDestroyed) {
         callHook(vm, 'beforeUpdate')
       }
     }
-  }, true /* isRenderWatcher */)
+  }, true)
   hydrating = false
   // mounted is called for render-created child components in its inserted hook
   // 这里注意 vm.$vnode 表示 Vue 实例的父虚拟 Node，所以它为 Null 则表示当前是根 Vue 的实例

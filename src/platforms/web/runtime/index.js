@@ -34,13 +34,22 @@ extend(Vue.options.components, platformComponents)
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
+/***
+ * 在Vue类原型对象上定义$mount方法，每一个Vue的实例(组件实例)就会有$mount方法
+ * @param el
+ * @param hydrating
+ * @returns {*}
+ */
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
-  // query返回真实dom, 即为<div id="app"></div>
+  // query返回真实dom, 即为<div// query返回真实dom, 即为<div id="app"></div> id="app"></div>
   el = el && inBrowser ? query(el) : undefined
   /* mountComponent方法在init的时候在initLiftCycle里定义的 */
+  /**
+   * 这里传入的this指向的是Vue的实例，也就是组件实例
+   */
   return mountComponent(this, el, hydrating)
 }
 

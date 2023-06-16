@@ -16,11 +16,15 @@
 // }
 
 new Vue({
-
   el: '#demo',
+  render(createElement) {
+    return createElement('div', {
+      id: 'app2'
+    }, ['111', '222'])
+  },
   data() {
     return {
-      message: 'Hello, vue2'
+      message: 'Hello, '
     }
   },
 

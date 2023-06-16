@@ -74,10 +74,10 @@ export function renderMixin (Vue: Class<Component>) {
   createElement 根据 tag 的不同调用不同的方法生成 VNode
 */
   Vue.prototype._render = function (): VNode {
+    debugger
     const vm: Component = this
     // 调用的render是在$mount阶段将template转为render的方法，入参是vm.$createElement
     const { render, _parentVnode } = vm.$options
-
     if (_parentVnode) {
       vm.$scopedSlots = normalizeScopedSlots(
         _parentVnode.data.scopedSlots,

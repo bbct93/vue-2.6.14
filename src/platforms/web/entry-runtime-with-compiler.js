@@ -30,7 +30,10 @@ Vue.prototype.$mount = function (
     )
     return this
   }
-  // $options: {el, data, methods, watch...}
+  /**
+   * $options: {el, data, methods, watch...}, 这里的this指向Vue,
+   * 在_initMixin时mergeOptions时将options挂载到Vue.$options上
+  */
   const options = this.$options
   // resolve template/el and convert to render function
   // options中不存在render函数时，将template的dom转化为render函数
@@ -73,6 +76,7 @@ Vue.prototype.$mount = function (
         delimiters: options.delimiters,
         comments: options.comments
       }, this)
+      // 将render函数挂载到Vue.$options上
       options.render = render
       options.staticRenderFns = staticRenderFns
 
@@ -83,7 +87,10 @@ Vue.prototype.$mount = function (
       }
     }
   }
-  // 原先原型上的$mount方法，(之前缓存的)其内部调用了mountComponent方法 该方法在/src/platform/web/runtime/index.js
+  /**
+   *   原先原型上的$mount方法(之前缓存的),其内部调用了mountComponent方法
+   *   该方法在/src/platform/web/runtime/index.js
+   */
   return mount.call(this, el, hydrating)
 }
 
