@@ -38,7 +38,6 @@ export function createElement (
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
-  debugger
   // 对传参不一致进行处理，如果data不是对象，那么把参数后移一位
   if (Array.isArray(data) || isPrimitive(data)) {
     // data参数不传
@@ -65,6 +64,7 @@ export function _createElement (
   normalizationType?: number
 ): VNode | Array<VNode> {
   console.log('elementParams--->', context, tag, data, children)
+  debugger
   // vnodeData不能传入响应式对象
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -75,7 +75,17 @@ export function _createElement (
     return createEmptyVNode()
   }
   // object syntax in v-bind
-  // <component :is="name"></component> 组件会含有 .is
+  /***
+   *  <component :is="name"></component> 组件会含有 .is
+   *  或者render(createElement) {
+   *     return createElement('div', {
+   *       is: input
+   *       id: 'app2',
+   *     }, ['111', '222'])
+   *   },
+   *   会直接使用is作为tag使用
+   */
+
   if (isDef(data) && isDef(data.is)) {
     tag = data.is
   }

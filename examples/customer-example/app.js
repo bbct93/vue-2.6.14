@@ -18,9 +18,10 @@
 new Vue({
   el: '#demo',
   render(createElement) {
-    return createElement('div', {
-      id: 'app2'
-    }, ['111', '222'])
+    return createElement('div', {}, [
+      createElement('span', 'Parent Component'),
+      createElement('input')
+    ]);
   },
   data() {
     return {

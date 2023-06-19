@@ -19,6 +19,7 @@ import { isFalse, isTrue, isDef, isUndef, isPrimitive } from 'shared/util'
 export function simpleNormalizeChildren (children: any) {
   for (let i = 0; i < children.length; i++) {
     if (Array.isArray(children[i])) {
+      // 注意这里用的apply而不是call, apply第二个参数是传入调用函数参数的list数组，只能拍平一层
       return Array.prototype.concat.apply([], children)
     }
   }
@@ -52,15 +53,17 @@ normalizeArrayChildren主要做了：
 1、循环入参children
 2、当前项为数组时，递归处理children
 3、当前项为普通数据类型，传入当前项生成TextVNode
+4、nestedIndex表示嵌套索引
 */
 function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNode> {
   const res = []
   let i, c, lastIndex, last
   for (i = 0; i < children.length; i++) {
     c = children[i]
-    // continue表示符合if条件跳出当前循环，进入下一次循环
+    // continue在for循环中是跳出当前循环，进入下一个循环，break是结束所有循环
     // 没有定义的组件或者是boolean类型组件不处理，进入下一个组件判断
     if (isUndef(c) || typeof c === 'boolean') continue
+    // 获取 res 数组的最后一个元素，并将其保存到变量 last 中
     lastIndex = res.length - 1
     last = res[lastIndex]
     //  nested
@@ -68,7 +71,7 @@ function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNo
       if (c.length > 0) {
         c = normalizeArrayChildren(c, `${nestedIndex || ''}_${i}`)
         // merge adjacent text nodes
-        // 合并文本节点
+        // 合并相邻文本节点
         if (isTextNode(c[0]) && isTextNode(last)) {
           res[lastIndex] = createTextVNode(last.text + (c[0]: any).text)
           c.shift()
