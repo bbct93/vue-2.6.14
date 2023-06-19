@@ -58,8 +58,11 @@ export function initLifecycle(vm: Component) {
 export function lifecycleMixin(Vue: Class<Component>) {
   // _update核心是调用__patch__函数 它的定义在 src/platforms/web/runtime/patch.js中
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
+    debugger
     const vm: Component = this
+    // 这里的$el是真实dom,在Vue.prototype.$mount函数中定义在vm上，即为根节点的真实dom
     const prevEl = vm.$el
+    // 用于判断走initPatch还是updatePatch
     const prevVnode = vm._vnode
     const restoreActiveInstance = setActiveInstance(vm)
     vm._vnode = vnode
@@ -77,6 +80,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
     if (prevEl) {
       prevEl.__vue__ = null
     }
+    // 难怪$0.__vue__能访问到组件实例
     if (vm.$el) {
       vm.$el.__vue__ = vm
     }

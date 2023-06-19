@@ -136,12 +136,12 @@ export function _createElement (
     这里先对 tag 做判断，如果是 string 类型，则再判断如果是为 HTML 内置标签类型，就直接创建一个普通 VNode 节点，
     如果是已注册的组件名，则通过 createComponent 创建一个组件 VNode，
     否则创建一个未知标签的VNode。createComponent 方法本质是返回一个 VNode
-  */
-  /*
-    isReservedTag = function (tag) {
+    /***
+     * 判断是否是html自身tag
+     * isReservedTag = function (tag) {
       return isHTMLTag(tag) || isSVG(tag)
     };
-    */
+     */
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.nativeOn) && data.tag !== 'component') {
