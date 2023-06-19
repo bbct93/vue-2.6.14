@@ -168,7 +168,6 @@ export function _createElement (
     }
   } else {
     // direct component options / constructor
-    console.log('tag from createElement', tag)
     vnode = createComponent(tag, data, context, children)
   }
   if (Array.isArray(vnode)) {

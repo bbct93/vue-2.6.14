@@ -56,6 +56,7 @@ normalizeArrayChildren主要做了：
 4、nestedIndex表示嵌套索引
 */
 function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNode> {
+  // res 用于存储规范化后的子节点
   const res = []
   let i, c, lastIndex, last
   for (i = 0; i < children.length; i++) {

@@ -17,12 +17,14 @@
 
 new Vue({
   el: '#demo',
-  render(createElement) {
-    return createElement('div', {}, [
-      createElement('span', 'Parent Component'),
-      createElement('input')
-    ]);
-  },
+  // render(createElement) {
+  //   return createElement('div', {
+  //     id: 'app1'
+  //   }, [
+  //     createElement('span', 'Parent Component1'),
+  //     createElement('span', 'parent component2')
+  //   ]);
+  // },
   data() {
     return {
       message: 'Hello, '
