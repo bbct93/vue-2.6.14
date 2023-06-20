@@ -31,6 +31,7 @@ extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
+// 只有浏览器才会有dom概念，所以非浏览器会返回空函数
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method

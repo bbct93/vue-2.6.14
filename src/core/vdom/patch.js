@@ -712,14 +712,18 @@ export function createPatchFunction (backend) {
       return node.nodeType === (vnode.isComment ? 8 : 3)
     }
   }
-  /*
-  oldVnode: 挂载的根节点，vm.$el对应的id为app的DOM对象
-    <div id="app"></div>(由mountComponent函数赋值),是一个dom container
-  VNode：表示执行_render后返回的VNode节点
-  hydrating：是否服务端渲染
-  removeOnly： 是给 transition-group 用的
+  /**
+   * oldVnode: 挂载的根节点，vm.$el对应的id为app的DOM对象，是真实dom哦
+   *     <div id="app"></div>(由mountComponent函数赋值),是一个dom container
+   *   VNode：表示执行_render后返回的vnode节点,待转化为真实dom
+   *   hydrating：是否服务端渲染
+   *   removeOnly： 是给 transition-group 用的
+   *   init阶段：
+   *   // initial render
+   * vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false)
   */
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
+    debugger
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
@@ -767,17 +771,18 @@ export function createPatchFunction (backend) {
           oldVnode = emptyNodeAt(oldVnode)
         }
 
-        // replacing existing element
+        // replacing existing element,oldElm保存的是真实dom
         const oldElm = oldVnode.elm
-        // 获取父节点
+        // 获取父节点,获得oldElm的上级dom节点，也是真实dom，
+        // 如果是id=app的oldElm,parentElm就是body节点
         const parentElm = nodeOps.parentNode(oldElm)
 
         // create new node
         // 非常重要
-        /*
-          这里传入的 parentElm 是 oldVnode.elm 的父元素，
-          在我们的例子是 id 为 #app div 的父元素，也就是 Body；
-          实际上整个过程就是递归创建了一个完整的 DOM 树并插入到 Body 上。
+        /**
+         * 这里传入的 parentElm 是 oldVnode.elm 的父元素，
+         * 在我们的例子是 id 为 #app div 的父元素，也就是 Body；
+         * 实际上整个过程就是递归创建了一个完整的 DOM 树并插入到 Body 上。
         */
         createElm(
           vnode,

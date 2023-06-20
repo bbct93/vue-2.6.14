@@ -67,12 +67,12 @@ export function lifecycleMixin(Vue: Class<Component>) {
     const restoreActiveInstance = setActiveInstance(vm)
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
-    // based on the rendering backend used.
+    // based on the rendering backend used. 初始化
     if (!prevVnode) {
       // initial render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
-      // updates
+      // updates 更新
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
     restoreActiveInstance()
@@ -80,7 +80,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
     if (prevEl) {
       prevEl.__vue__ = null
     }
-    // 难怪$0.__vue__能访问到组件实例
+    // 难怪$0.__vue__能访问到组件实例,原来是在这里挂载上去了
     if (vm.$el) {
       vm.$el.__vue__ = vm
     }

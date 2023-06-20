@@ -17,13 +17,20 @@
 
 new Vue({
   el: '#demo',
-  render(createElement) {
+  // render(createElement) {
+  //   return createElement('div', {
+  //     id: 'app1'
+  //   }, [
+  //     createElement('span', 'Parent Component1'),
+  //     createElement('span', 'parent component2')
+  //   ]);
+  // },
+  render: function (createElement) {
     return createElement('div', {
-      id: 'app1'
-    }, [
-      createElement('span', 'Parent Component1'),
-      createElement('span', 'parent component2')
-    ]);
+      attrs: {
+        id: 'app'
+      }
+    }, this.message)
   },
   data() {
     return {
