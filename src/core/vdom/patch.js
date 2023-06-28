@@ -70,7 +70,9 @@ function createKeyToOldIdx (children, beginIdx, endIdx) {
 export function createPatchFunction (backend) {
   let i, j
   const cbs = {}
-
+  /**
+   * nodeOps 是一些对dom的一些操作方法(nodeOperations)
+   */
   const { modules, nodeOps } = backend
 
   for (i = 0; i < hooks.length; ++i) {
@@ -122,6 +124,19 @@ export function createPatchFunction (backend) {
 
   let creatingElmInVPre = 0
 
+  /**
+   * 通过虚拟节点(vnode)创建真实dom并插入到它的父节点中
+   * vnode和vm不是一个东西，vnode是虚拟dom,Vnode的实例；
+   * vm(view-model),是组件实例
+   * vvnode.context指向vm
+   * @param vnode
+   * @param insertedVnodeQueue
+   * @param parentElm
+   * @param refElm
+   * @param nested
+   * @param ownerArray
+   * @param index
+   */
   function createElm (
     vnode,
     insertedVnodeQueue,
@@ -145,7 +160,16 @@ export function createPatchFunction (backend) {
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
-
+    /** 这里的data是render中的参数,例如：
+     * render: function (createElement) {
+     *     return createElement('div', {
+     *       attrs: {
+     *         id: 'demo'
+     *       }
+     *     }, this.message)
+     *   }
+     *   这里的data就是 attrs: {id: 'demo'}
+     */
     const data = vnode.data
     const children = vnode.children
     const tag = vnode.tag
@@ -301,7 +325,10 @@ export function createPatchFunction (backend) {
       if (process.env.NODE_ENV !== 'production') {
         checkDuplicateKeys(children)
       }
-      // 实际上是遍历子虚拟节点，递归调用 createElm
+      /**
+       * 实际上是遍历子虚拟节点，递归调用 createElm
+       * vnode.elm在createElmz中将父节点的vnode转化为的真实dom
+       */
       for (let i = 0; i < children.length; ++i) {
         createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i)
       }
@@ -323,7 +350,9 @@ export function createPatchFunction (backend) {
     }
     i = vnode.data.hook // Reuse variable
     if (isDef(i)) {
+      // 执行crate钩子
       if (isDef(i.create)) i.create(emptyNode, vnode)
+      // 将vnode推入到insertedVnodeQueue中
       if (isDef(i.insert)) insertedVnodeQueue.push(vnode)
     }
   }
@@ -713,7 +742,7 @@ export function createPatchFunction (backend) {
     }
   }
   /**
-   * oldVnode: 挂载的根节点，vm.$el对应的id为app的DOM对象，是真实dom哦
+   * oldVnode: 挂载的根节点，vm.$el对应的id为app的DOM对象，是真实dom哦, 它也可以不存在或者是一个 DOM 对象；
    *     <div id="app"></div>(由mountComponent函数赋值),是一个dom container
    *   VNode：表示执行_render后返回的vnode节点,待转化为真实dom
    *   hydrating：是否服务端渲染
@@ -723,7 +752,6 @@ export function createPatchFunction (backend) {
    * vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false)
   */
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
-    debugger
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
@@ -737,7 +765,7 @@ export function createPatchFunction (backend) {
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
-      // 初始化oldVnode实际是个DOM container，所以isRealElement为true
+      // 初始化oldVnode实际是个真实DOM container，所以isRealElement为true
       const isRealElement = isDef(oldVnode.nodeType)
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
@@ -767,7 +795,7 @@ export function createPatchFunction (backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
-          // 将oldVnode，原先的真实DOM转化为VNode，然后调用createElm
+          // 将oldVnode，原先的真实dom(vm.$el)转化为VNode
           oldVnode = emptyNodeAt(oldVnode)
         }
 

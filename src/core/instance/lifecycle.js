@@ -70,6 +70,10 @@ export function lifecycleMixin(Vue: Class<Component>) {
     // based on the rendering backend used. 初始化
     if (!prevVnode) {
       // initial render
+      /**
+       * 传入的vm.$el是在mountComponent时定义在vm上
+       * __patch在src/platforms/web/runtime/index.js上定义的
+       */
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates 更新
@@ -201,6 +205,7 @@ export function mountComponent(
     }
   } else {
     updateComponent = () => {
+      // render方法在/core/instance/render下定义,_update在lifecycle下的lifecycleMixin里定义
       vm._update(vm._render(), hydrating)
     }
   }

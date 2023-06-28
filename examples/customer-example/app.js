@@ -28,13 +28,13 @@ new Vue({
   render: function (createElement) {
     return createElement('div', {
       attrs: {
-        id: 'app'
+        id: 'demo'
       }
     }, this.message)
   },
   data() {
     return {
-      message: 'Hello, '
+      message: 'Hello'
     }
   },
 
