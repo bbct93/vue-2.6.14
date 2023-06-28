@@ -58,7 +58,6 @@ export function initLifecycle(vm: Component) {
 export function lifecycleMixin(Vue: Class<Component>) {
   // _update核心是调用__patch__函数 它的定义在 src/platforms/web/runtime/patch.js中
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
-    debugger
     const vm: Component = this
     // 这里的$el是真实dom,在Vue.prototype.$mount函数中定义在vm上，即为根节点的真实dom
     const prevEl = vm.$el

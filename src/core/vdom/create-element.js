@@ -64,7 +64,6 @@ export function _createElement (
   normalizationType?: number
 ): VNode | Array<VNode> {
   console.log('elementParams--->', context, tag, data, children)
-  debugger
   // vnodeData不能传入响应式对象
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(

@@ -1,45 +1,38 @@
 /* global Vue */
 
-
-/**
- * Actual demo
- */
-
-// const App = {
-//   render(createElement) {
-//     return createElement(
-//       'div',
-//       {class: 'parent'},
-//       [createElement('p', {class: 'child'}, 'I am children from App comp')])
-//   },
-//   data: {message: 'message from App comp'}
-// }
-
-new Vue({
-  el: '#demo',
-  // render(createElement) {
-  //   return createElement('div', {
-  //     id: 'app1'
-  //   }, [
-  //     createElement('span', 'Parent Component1'),
-  //     createElement('span', 'parent component2')
-  //   ]);
-  // },
-  render: function (createElement) {
-    return createElement('div', {
-      attrs: {
-        id: 'demo'
-      }
-    }, this.message)
-  },
-  data() {
+Vue.component('button-counter', {
+  data: function () {
     return {
-      message: 'Hello'
+      count: 0
     }
   },
-
-
-
-  // render: h => h(App)
-
+  template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
 })
+
+// new Vue({
+//   el: '#demo',
+//
+//   // render(createElement) {
+//   //   return createElement('div', {
+//   //     id: 'app1'
+//   //   }, [
+//   //     createElement('span', 'Parent Component1'),
+//   //     createElement('span', 'parent component2')
+//   //   ]);
+//   // },
+//   render: function (createElement) {
+//     return createElement('div', {
+//       attrs: {
+//         id: 'demo'
+//       }
+//     }, 'button-counter', {})
+//   },
+//   data() {
+//     return {
+//       message: 'Hello'
+//     }
+//   },
+// })
+
+new Vue({ el: '#demo' })
+
