@@ -64,7 +64,7 @@ export function initMixin (Vue: Class<Component>) {
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
-
+    // 子组件的调用new Sub()的时候时候vm.$options.el是undefined，所以需要自己$mount
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }

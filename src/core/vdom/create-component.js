@@ -44,11 +44,12 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
-      // 创建Vue实例，给vnode赋值，然后调用$mount方法挂载子组件
+      // 创建Vue实例，返回vm给child, 然后调用$mount方法挂载子组件,
       const child = vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance
       )
+      // 由于子组件在init的时候时候不存在$el,所以需要自己进行$mount
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
@@ -130,12 +131,16 @@ export function createComponent (
     )
     这样就把 Vue 上的一些 option 扩展到了 vm.$options 上，
     所以我们也就能通过 vm.$options._base 拿到 Vue 这个构造函数
+    即Vue === baseCtor 为true
   */
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
-    // Vue.extend 函数的定义，在 src/core/global-api/extend.js 中
+    /**
+     *  Vue.extend 函数的定义，在 src/core/global-api/extend.js 中
+     *  Ctor就是Vue构造函数的一个子类，继承了Vue类
+     */
     Ctor = baseCtor.extend(Ctor)
   }
 
@@ -215,6 +220,7 @@ export function createComponent (
   // 通过 new VNode 实例化一个 vnode 并返回。
   // 需要注意的是和普通元素节点的 vnode 不同，组件的 vnode 是没有 children 的，这点很关键
   const name = Ctor.options.name || tag
+  // 创建子组件的vonde
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
     data, undefined, undefined, undefined, context,

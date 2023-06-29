@@ -438,6 +438,7 @@ export function mergeOptions (
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
+ * 用于解析 Vue 组件、指令、过滤器等资源的内部方法
  */
 export function resolveAsset (
   options: Object,
