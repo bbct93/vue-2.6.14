@@ -44,12 +44,16 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
-      // 创建Vue实例，返回vm给child, 然后调用$mount方法挂载子组件,
+      // 创建Vue实例，返回vm给child, 然后调用$mount方法挂载子组件
       const child = vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance
       )
-      // 由于子组件在init的时候时候不存在$el,所以需要自己进行$mount
+      /**
+       * 由于子组件在init的时候不存在$el,所以需要自己进行$mount,
+       * $mount方法在每个vm上都会存在(Vue实例)，child是Vue的子类Sub的实例，所以child也存在$mount方法
+       * $mount方法定义咋platforms/web/index.js中(VUe.prototype.$mount = )
+        */
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
@@ -133,7 +137,7 @@ export function createComponent (
     所以我们也就能通过 vm.$options._base 拿到 Vue 这个构造函数
     即Vue === baseCtor 为true
   */
-  const baseCtor = context.$options._base
+  const baseCtor = context.$options._base  // 此时baseCtor即为Vue(构造函数)
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
@@ -213,6 +217,10 @@ export function createComponent (
   // install component management hooks onto the placeholder node
   // 安装组件的钩子函数
   // before data: {on: undefined}
+  /**
+   * 整个 installComponentHooks 的过程就是把 componentVNodeHooks 的钩子函数合并到 data.hook 中，
+   * 在 VNode 执行 patch 的过程中执行相关的钩子函数
+   */
   installComponentHooks(data)
   // after data: {on: undefined, hook: {...}}
 
@@ -247,10 +255,9 @@ export function createComponentInstanceForVnode (
   parent: any
 ): Component {
   const options: InternalComponentOptions = {
-    _isComponent: true,
+    _isComponent: true,  // 表示这是一个组件
     _parentVnode: vnode,
-    // parent 表示当前激活的组件实例
-    parent
+    parent // parent 表示当前激活的组件实例
   }
   // check inline-template render functions
   const inlineTemplate = vnode.data.inlineTemplate

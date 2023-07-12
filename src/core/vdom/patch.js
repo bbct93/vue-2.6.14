@@ -156,7 +156,7 @@ export function createPatchFunction (backend) {
     }
 
     vnode.isRootInsert = !nested // for transition enter check
-    // 尝试创建子组件
+    // 尝试创建子组件,在组件的时候会在这里创建成功
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -244,7 +244,12 @@ export function createPatchFunction (backend) {
   }
 
   function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
-    let i = vnode.data  // data: {on: undefined, hookL {init,prepatch, insert, destroy}}
+    /**
+     * data: {on: undefined, hook: {init,prepatch, insert, destroy}}
+     * i拿到hook后执行init钩子
+     */
+
+    let i = vnode.data
     if (isDef(i)) {
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
       if (isDef(i = i.hook) && isDef(i = i.init)) {
