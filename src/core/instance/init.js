@@ -14,6 +14,7 @@ let uid = 0
 
 export function initMixin (Vue: Class<Component>) {
   Vue.prototype._init = function (options?: Object) {
+    // this 指向Vue实例vm，所欲的构造函数this都是指向它的实例
     const vm: Component = this;
     // a uid
     vm._uid = uid++
@@ -28,7 +29,7 @@ export function initMixin (Vue: Class<Component>) {
 
     // a flag to avoid this being observed
     vm._isVue = true
-    // merge options,子组件实例化时_isComponent为true
+    // merge options,子组件实例化时_isComponent为true,所以会走到initInternalComponent里
     if (options && options._isComponent) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
@@ -75,6 +76,7 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
   const parentVnode = options._parentVnode
+  // 实例化子组件时把之前我们通过 createComponentInstanceForVnode 函数传入的几个参数合并到内部的选项 $options 里了
   opts.parent = options.parent
   opts._parentVnode = parentVnode
 

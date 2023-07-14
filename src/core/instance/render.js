@@ -98,7 +98,7 @@ export function renderMixin (Vue: Class<Component>) {
       currentRenderingInstance = vm
       /***
        * 如果是用手写的render方法，则会直接调用这个render方法
-       * 例如组件里不写template，直接使用render方法写组件的方式,createElement就是指向vm.$createElement
+       * 例如组件里不写template，直接使用render方法写组件的方式,createElement就是指向vm.$createElement,vm.$createElement是个函数
        * render(createElement) {
        *   return createElement('div', {
        *     id: 'app',

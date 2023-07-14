@@ -50,7 +50,7 @@ const componentVNodeHooks = {
         activeInstance
       )
       /**
-       * 由于子组件在init的时候不存在$el,所以需要自己进行$mount,
+       * 由于组件初始化的时候是不传 el 的，因此组件是自己接管了 $mount 的过程
        * $mount方法在每个vm上都会存在(Vue实例)，child是Vue的子类Sub的实例，所以child也存在$mount方法
        * $mount方法定义咋platforms/web/index.js中(VUe.prototype.$mount = )
         */
