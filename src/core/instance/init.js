@@ -26,7 +26,6 @@ export function initMixin (Vue: Class<Component>) {
       endTag = `vue-perf-end:${vm._uid}`
       mark(startTag)
     }
-
     // a flag to avoid this being observed
     vm._isVue = true
     // merge options,子组件实例化时_isComponent为true,所以会走到initInternalComponent里
@@ -65,20 +64,25 @@ export function initMixin (Vue: Class<Component>) {
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
-    // 子组件的调用new Sub()的时候时候vm.$options.el是undefined，所以需要自己$mount
+    // 子组件的调用new Sub()的时候时候vm.$options.el是undefined，所以自己在init的hooks中进行$mount
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }
   }
 }
 
+// 注意：如果是渲染子组件，这里的options就是从createComponentInstanceForVnode的options里带过来的
 export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
+  /**
+   * Object.create() 方法是 JavaScript 中用于创建一个新对象，
+   * 并以指定对象为新对象的原型（[[Prototype]]）的方法。这意味着新对象可以继承原型对象的属性和方法。
+   */
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
   const parentVnode = options._parentVnode
   // 实例化子组件时把之前我们通过 createComponentInstanceForVnode 函数传入的几个参数合并到内部的选项 $options 里了
-  opts.parent = options.parent
-  opts._parentVnode = parentVnode
+  opts.parent = options.parent // vm.$options.parent指向父组件的vm
+  opts._parentVnode = parentVnode  // vm.$options._parentVnode指向父组件的Vnode
 
   const vnodeComponentOptions = parentVnode.componentOptions
   opts.propsData = vnodeComponentOptions.propsData

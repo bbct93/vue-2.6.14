@@ -52,8 +52,9 @@ const componentVNodeHooks = {
       /**
        * 由于组件初始化的时候是不传 el 的，因此组件是自己接管了 $mount 的过程
        * $mount方法在每个vm上都会存在(Vue实例)，child是Vue的子类Sub的实例，所以child也存在$mount方法
-       * $mount方法定义咋platforms/web/index.js中(VUe.prototype.$mount = )
+       * $mount方法定义在platforms/web/runtime/index.js中(VUe.prototype.$mount = )
         */
+      // child.$mount(undefined, false)
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
@@ -228,7 +229,7 @@ export function createComponent (
   // 通过 new VNode 实例化一个 vnode 并返回。
   // 需要注意的是和普通元素节点的 vnode 不同，组件的 vnode 是没有 children 的，这点很关键
   const name = Ctor.options.name || tag
-  // 创建子组件的vonde
+  // 创建子组件的vonde，这里注意组件的children是空，后面path阶段会用到
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
     data, undefined, undefined, undefined, context,
@@ -251,7 +252,7 @@ export function createComponent (
 export function createComponentInstanceForVnode (
   // we know it's MountedComponentVNode but flow doesn't
   vnode: any,
-  // activeInstance in lifecycle state
+  // activeInstance in lifecycle state，即为init钩子中传入的activeInstance
   parent: any
 ): Component {
   const options: InternalComponentOptions = {
