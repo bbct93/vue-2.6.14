@@ -256,7 +256,7 @@ export function createComponentInstanceForVnode (
   parent: any
 ): Component {
   const options: InternalComponentOptions = {
-    _isComponent: true,  // 表示这是一个组件
+    _isComponent: true,  // 表示这是一个组件,在_init()时会判断区分mergeOptions的策略
     _parentVnode: vnode,
     parent // parent 表示当前激活的组件实例
   }

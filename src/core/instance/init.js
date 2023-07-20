@@ -81,8 +81,13 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   // doing this because it's faster than dynamic enumeration.
   const parentVnode = options._parentVnode
   // 实例化子组件时把之前我们通过 createComponentInstanceForVnode 函数传入的几个参数合并到内部的选项 $options 里了
-  opts.parent = options.parent // vm.$options.parent指向父组件的vm
-  opts._parentVnode = parentVnode  // vm.$options._parentVnode指向父组件的Vnode
+  /**
+   * 把 parent 存储在 vm.$options 中，vm.$options.parent指向父组件的vm
+   * 这个options.parent就是createComponentInstanceForVnode中传入的activeInstance
+   */
+  opts.parent = options.parent
+  // vm.$options._parentVnode指向父组件的Vnode
+  opts._parentVnode = parentVnode
 
   const vnodeComponentOptions = parentVnode.componentOptions
   opts.propsData = vnodeComponentOptions.propsData

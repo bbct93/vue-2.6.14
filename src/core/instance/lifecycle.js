@@ -33,11 +33,17 @@ export function initLifecycle(vm: Component) {
   const options = vm.$options
 
   // locate first non-abstract parent
+  /**
+   *   vm.$parent 就是用来保留当前 vm 的父实例，
+   *   并且通过 parent.$children.push(vm) 来把当前的 vm 存储到父实例的 $children 中。
+    */
   let parent = options.parent
+  // 注意这里如果是抽象组件，就不会进行父子级关系构建
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
     }
+    // 即把当前vm放到vm.$options.parent.$children数组中
     parent.$children.push(vm)
   }
 
@@ -63,7 +69,12 @@ export function lifecycleMixin(Vue: Class<Component>) {
     const prevEl = vm.$el
     // 用于判断走initPatch还是updatePatch
     const prevVnode = vm._vnode
+    /** setActiveInstance方法用来保存当前上下文Vue实例，是lifecycle模块的全局变量
+     *  在之前调用 createComponentInstanceForVnode 方法构建组件实例时传入的options中的parent的时候从 lifecycle 模块获取，并且作为参数传入的
+     */
+      // 把vm设置为activeInstance，并保留住上一次的vm(prevActiveInstance),父子关系
     const restoreActiveInstance = setActiveInstance(vm)
+    // 注意：在渲染子组件时，vm._vnode和vm.$vnode的是父子关系，即vm._vnode.parent === vm.$vnode
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used. 初始化
