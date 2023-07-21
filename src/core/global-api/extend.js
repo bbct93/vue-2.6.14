@@ -47,6 +47,11 @@ export function initExtend (Vue: GlobalAPI) {
     Sub.prototype = Object.create(Super.prototype)
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
+    /**
+     * 在注册全局组件时，会把存在于Vue.options.components上定义的全局组件合并到Sub.options上
+     * 然后在组件的实例化阶段，会执行 merge options 逻辑，
+     * 把 Sub.options.components 合并到 vm.$options.components 上。
+     */
     Sub.options = mergeOptions(
       Super.options,
       extendOptions

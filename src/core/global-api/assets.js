@@ -21,11 +21,18 @@ export function initAssetRegisters (Vue: GlobalAPI) {
         }
         if (type === 'component' && isPlainObject(definition)) {
           definition.name = definition.name || id
+          // 这里this.options._base.extend相当于Vue.extend,把这个对象转换成一个继承于 Vue 的构造函数
           definition = this.options._base.extend(definition)
         }
         if (type === 'directive' && typeof definition === 'function') {
           definition = { bind: definition, update: definition }
         }
+        /**
+         * 挂载到Vue.options.components上,然后在Vue.extend函数中将全局组件合并到Sub.options上
+         * 也就是组件的 options 上，然后在组件的实例化阶段，会执行 merge options 逻辑，把 Sub.options.components 合并到 vm.$options.components 上。
+         * 而局部组件components 合并到 vm.$options.components 上，而全局注册是扩展到 Vue.options 下
+          */
+
         this.options[type + 's'][id] = definition
         return definition
       }
