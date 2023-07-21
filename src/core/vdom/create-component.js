@@ -75,6 +75,13 @@ const componentVNodeHooks = {
     const { context, componentInstance } = vnode
     if (!componentInstance._isMounted) {
       componentInstance._isMounted = true
+      /**
+       * 非根节点组件，即vm.$vnode不为空的组件的mount是在这里调用的，
+       * insert会在组件的 VNode patch 到 DOM 后，会执行 invokeInsertHook 函数
+       * 每个子组件都是在这个钩子函数中执行 mounted 钩子函数，
+       * 并且我们之前分析过，insertedVnodeQueue 的添加顺序是先子后父，
+       * 所以对于同步渲染的子组件而言，mounted 钩子函数的执行顺序也是先子后父。
+        */
       callHook(componentInstance, 'mounted')
     }
     if (vnode.data.keepAlive) {

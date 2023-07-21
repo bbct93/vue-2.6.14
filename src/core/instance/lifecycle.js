@@ -190,6 +190,7 @@ export function mountComponent(
       }
     }
   }
+  // 在执行 vm._render() 函数渲染 VNode 之前，执行了 beforeMount 钩子函数
   callHook(vm, 'beforeMount')
   // 定义updateComponent方法
   let updateComponent
@@ -233,6 +234,7 @@ export function mountComponent(
    */
   new Watcher(vm, updateComponent, noop, {
     before() {
+      // 注意这里有个判断，也就是在组件已经 mounted 之后，才会去调用beforeUpdate这个钩子函
       if (vm._isMounted && !vm._isDestroyed) {
         callHook(vm, 'beforeUpdate')
       }
@@ -240,11 +242,15 @@ export function mountComponent(
   }, true)
   hydrating = false
   // mounted is called for render-created child components in its inserted hook
-  // 这里注意 vm.$vnode 表示 Vue 实例的父虚拟 Node，所以它为 Null 则表示当前是根 Vue 的实例
-  // TODO: 这里的根Vue实例有几个？所有子组件都挂载完成才会执行其父组件的mounted钩子？子组件的mounted钩子何时执行
+  /**
+   * 注意，这里对 mounted 钩子函数执行有一个判断逻辑，
+   * vm.$vnode 如果为 null，则表明这不是一次组件的初始化过程，而是我们通过外部 new Vue 初始化过程
+   * 因为只有外部new Vue时才不会存在父组件$vnode，所以只有根组件才会走进这里
+    */
   if (vm.$vnode == null) {
     // _isMounted判断是否已经挂载了，同时执行mounted钩子函数
     vm._isMounted = true
+    // 在执行完 vm._update() 把 VNode patch 到真实 DOM 后，执行 mounted 钩子
     callHook(vm, 'mounted')
   }
   return vm
@@ -375,6 +381,7 @@ export function deactivateChildComponent(vm: Component, direct?: boolean) {
 export function callHook(vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
+  // 在合并options时，已经把各组件实例的钩子函数合并到options上
   const handlers = vm.$options[hook]
   const info = `${hook} hook`
   if (handlers) {

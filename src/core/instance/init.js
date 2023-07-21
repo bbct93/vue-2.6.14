@@ -54,6 +54,10 @@ export function initMixin (Vue: Class<Component>) {
     initRender(vm)
     callHook(vm, 'beforeCreate')
     initInjections(vm) // resolve injections before data/props
+    /** initState用于初始化props/data/methods/watch/computed等属性，
+     * beforeCreate 的钩子函数中就不能获取到 props、data 中定义的值，
+     * 也不能调用 methods 中定义的函数，没有渲染 DOM，所以我们也不能够访问 DOM
+      */
     initState(vm)
     initProvide(vm) // resolve provide after data/props
     callHook(vm, 'created')
