@@ -225,7 +225,7 @@ export function mountComponent(
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
   /**
-   * 实例化一个watcher，在它的构造函数中会调用这个updateComponent方法，这个方法做两件事情
+   * 实例化一个渲染watcher，在它的构造函数中会调用这个updateComponent方法，这个方法做两件事情
    *   1、这个方法中会调用vm._render生成虚拟Node，
    *   2、最终会调用vm._update方法更新dom
    *   Watcher在这里起到两个作用：

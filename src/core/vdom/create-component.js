@@ -166,6 +166,7 @@ export function createComponent (
   }
 
   // async component
+  // 因为没有进入Vue.extend的逻辑，所以Ctor中不存在cid,会进入创建异步组件的逻辑
   let asyncFactory
   if (isUndef(Ctor.cid)) {
     asyncFactory = Ctor

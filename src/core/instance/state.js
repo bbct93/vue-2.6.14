@@ -61,7 +61,7 @@ export function initState (vm: Component) {
     initWatch(vm, opts.watch)
   }
 }
-
+// propsOptions参数是 vm.$options.props
 function initProps (vm: Component, propsOptions: Object) {
   const propsData = vm.$options.propsData || {}
   const props = vm._props = {}
@@ -104,6 +104,8 @@ function initProps (vm: Component, propsOptions: Object) {
     // during Vue.extend(). We only need to proxy props defined at
     // instantiation here.
     if (!(key in vm)) {
+      // 通过 Object.defineProperty 把 target[sourceKey][key] 的读写变成了对 target[key] 的读写
+      // 即将vm._props.xx变为对vm.xx的读写，给非Vnode数据添加一个Observer
       proxy(vm, `_props`, key)
     }
   }
@@ -148,7 +150,7 @@ function initData (vm: Component) {
       proxy(vm, `_data`, key)
     }
   }
-  // observe data
+  // observe data，将data变为响应式，用于依赖收集和派发更新
   observe(data, true /* asRootData */)
 }
 

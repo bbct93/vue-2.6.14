@@ -64,6 +64,7 @@ export class Observer {
   walk (obj: Object) {
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
+      // 定义一个响应式对象
       defineReactive(obj, keys[i])
     }
   }
@@ -131,6 +132,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 
 /**
  * Define a reactive property on an Object.
+ * 定义响应式对象，给对象动态添加getter和setter
  */
 export function defineReactive (
   obj: Object,
@@ -152,11 +154,12 @@ export function defineReactive (
   if ((!getter || setter) && arguments.length === 2) {
     val = obj[key]
   }
-
+  //对子对象递归调用observe方法，保证了无论 obj 的结构多复杂，它的所有子属性也能变成响应式的对象
   let childOb = !shallow && observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
+    // getter做依赖收集
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
@@ -170,6 +173,7 @@ export function defineReactive (
       }
       return value
     },
+    // setter做派发更新
     set: function reactiveSetter (newVal) {
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */

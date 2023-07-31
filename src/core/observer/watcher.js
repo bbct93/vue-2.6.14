@@ -48,6 +48,7 @@ export default class Watcher {
     expOrFn: string | Function,
     cb: Function,
     options?: ?Object,
+    // 判断是否渲染watcher
     isRenderWatcher?: boolean
   ) {
     this.vm = vm
@@ -104,6 +105,13 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
+      /**
+       * 在渲染watcher过程中this.getter对应就是updateComponent函数，
+       * 他会先执行vm._render()方法，_render()会返回VNode，并且在这个过程中会对vm上的数据进行访问，这个时候就触发了数据对象的getter
+       * 每个对象值的getter都有一个dep，在触发getter的时候会调用dep.depend()方法
+       * 也就是调用target实例的addDep方法
+       * 所以在 vm._render() 过程中，会触发所有数据的 getter，这样实际上已经完成了一个依赖收集的过程
+       */
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -128,10 +136,15 @@ export default class Watcher {
    */
   addDep (dep: Dep) {
     const id = dep.id
+    // 逻辑判断是为了保证同一数据不会被添加多次
     if (!this.newDepIds.has(id)) {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
+        /**
+         * 把当前的 watcher 添加到这个数据持有的 dep 的 subs 中，
+         * 这个目的是为后续数据变化时候能通知到哪些 subs 做准备。
+         */
         dep.addSub(this)
       }
     }
