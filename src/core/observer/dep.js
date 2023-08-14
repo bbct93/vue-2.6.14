@@ -49,6 +49,7 @@ export default class Dep {
       // order
       subs.sort((a, b) => a.id - b.id)
     }
+    // 遍历所有的 subs，也就是 Watcher 的实例数组，然后调用每一个 watcher 的 update 方法
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()
     }
@@ -66,6 +67,7 @@ export function pushTarget (target: ?Watcher) {
   Dep.target = target
 }
 
+// 把 Dep.target 恢复成上一个状态，因为当前 vm 的数据依赖收集已经完成，那么对应的渲染Dep.target 也需要改变
 export function popTarget () {
   targetStack.pop()
   Dep.target = targetStack[targetStack.length - 1]

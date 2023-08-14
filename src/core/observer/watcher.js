@@ -125,6 +125,7 @@ export default class Watcher {
       if (this.deep) {
         traverse(value)
       }
+      // 把 Dep.target 恢复成上一个状态，因为当前 vm 的数据依赖收集已经完成，那么对应的渲染Dep.target 也需要改变
       popTarget()
       this.cleanupDeps()
     }
@@ -174,6 +175,10 @@ export default class Watcher {
   /**
    * Subscriber interface.
    * Will be called when a dependency changes.
+   * watcher并不是立马更新视图，而是进入队列中
+   * 一会会进入watcher队列，这也是 Vue 在做派发更新的时候的一个优化的点，
+   * 它并不会每次数据改变都触发 watcher 的回调，而是把这些 watcher 先添加到一个队列里，
+   * 然后在 nextTick 后执行 flushSchedulerQueue。
    */
   update () {
     /* istanbul ignore else */
@@ -192,6 +197,16 @@ export default class Watcher {
    */
   run () {
     if (this.active) {
+      /**
+       * 先通过 this.get() 得到它当前的值，然后做判断
+       * 如果满足新旧值不等、新值是对象类型、deep 模式任何一个条件，则执行 watcher 的回调，
+       * 注意回调函数执行的时候会把第一个和第二个参数传入新值 value 和旧值 oldValue，
+       * 这就是当我们添加自定义 watcher 的时候能在回调函数的参数中拿到新旧值的原因。
+       */
+      // 对于渲染watcher而言，这里的get就会执行getter方法，即updateComponent，会触发组件重新渲染
+      // updateComponent = () => {
+      //   vm._update(vm._render(), hydrating)
+      // }
       const value = this.get()
       if (
         value !== this.value ||

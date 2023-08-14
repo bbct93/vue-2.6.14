@@ -18,7 +18,9 @@ const queue: Array<Watcher> = []
 const activatedChildren: Array<Component> = []
 let has: { [key: number]: ?true } = {}
 let circular: { [key: number]: number } = {}
+// waiting标志位表示当前是有有队列即将执行，没有的话在nextTick执行队列
 let waiting = false
+// flushing标志位表示是否正在刷新队列，即执行队列中的watcher，以更新视图
 let flushing = false
 let index = 0
 
@@ -81,6 +83,7 @@ function flushSchedulerQueue () {
   //    user watchers are created before the render watcher)
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
+  // 对队列做了从小到大的排序，3点理由如上方注释
   queue.sort((a, b) => a.id - b.id)
 
   // do not cache length because more watchers might be pushed
@@ -113,7 +116,7 @@ function flushSchedulerQueue () {
   // keep copies of post queues before resetting state
   const activatedQueue = activatedChildren.slice()
   const updatedQueue = queue.slice()
-
+  // 状态恢复，把这些控制流程状态的一些变量恢复到初始值，把 watcher 队列清空
   resetSchedulerState()
 
   // call component updated and activated hooks
@@ -160,16 +163,20 @@ function callActivatedHooks (queue) {
  * Push a watcher into the watcher queue.
  * Jobs with duplicate IDs will be skipped unless it's
  * pushed when the queue is being flushed.
+ * 重复的依赖ID会被跳过
  */
 export function queueWatcher (watcher: Watcher) {
+  // 先从 has[id] 判断队列中是否有这个 watcher，有则不加入队列。因此短时间内多次改变数据，视图只会更新一次。
   const id = watcher.id
   if (has[id] == null) {
     has[id] = true
+    // 当队列没有更新时新的watcher会放在队列末尾
     if (!flushing) {
       queue.push(watcher)
     } else {
       // if already flushing, splice the watcher based on its id
       // if already past its id, it will be run next immediately.
+      // 如果队列正在更新watcher会按照id代销顺序插入，index 表示当前执行的 watcher 的队列下标。
       let i = queue.length - 1
       while (i > index && queue[i].id > watcher.id) {
         i--
@@ -177,6 +184,7 @@ export function queueWatcher (watcher: Watcher) {
       queue.splice(i + 1, 0, watcher)
     }
     // queue the flush
+    // waiting标志位表示当前是有有队列即将执行，没有的话在nextTick执行队列
     if (!waiting) {
       waiting = true
 
@@ -184,6 +192,7 @@ export function queueWatcher (watcher: Watcher) {
         flushSchedulerQueue()
         return
       }
+      // 在下一个 tick，也就是异步的去执行 flushSchedulerQueue。
       nextTick(flushSchedulerQueue)
     }
   }
